@@ -1,0 +1,62 @@
+import cloudscraper
+import json
+
+# Function to retrieve data from the API endpoint
+def get_crash_data():
+    url = "https://api.bloxflip.com/games/crash"
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Failed to fetch data")
+        return None
+
+
+def calculate_average_crash(history):
+    crash_points = [entry["crashPoint"] for entry in history]
+    return sum(crash_points) / len(crash_points)
+
+
+def predict_safe_crash(average):
+    if average > 100.00:
+        return average / 5
+    elif average > 50.00:
+        return average / 3
+    elif average > 30.00:
+        return average / 2
+    else:
+        return average
+
+def predict_1x_crash(average):
+    if average > 100.00:
+        return True
+    elif average > 50.00:
+        return True
+    elif average > 30.00:
+        return True
+    else:
+        return False
+
+
+def main():
+    data = get_crash_data()
+    if data:
+        history = data.get("history", [])
+        if len(history) >= 5:
+            last_5_crash_points = history[-5:]
+            average_crash = calculate_average_crash(last_5_crash_points)
+            safe_crash = predict_safe_crash(average_crash)
+            predict_1x = predict_1x_crash(average_crash)
+
+            print("Predicted Safe Crash Point:", safe_crash)
+            if predict_1x:
+                print("Predicting a 1x crash for this game.")
+
+        else:
+            print("Insufficient data to make predictions.")
+    else:
+        print("Failed to fetch data")
+
+if __name__ == "__main__":
+    main()
