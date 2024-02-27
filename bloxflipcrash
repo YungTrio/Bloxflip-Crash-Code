@@ -1,7 +1,7 @@
 import cloudscraper
 import json
 
-# Function to retrieve data from the API endpoint
+
 def get_crash_data():
     url = "https://api.bloxflip.com/games/crash"
     scraper = cloudscraper.create_scraper()
